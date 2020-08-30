@@ -1,0 +1,10 @@
+{
+  "disciplina": [
+    {
+      "id": 1,
+      "nome": "WEB",
+      "curso": "ES",
+      "capacidade": 50
+    }
+  ]
+}

@@ -1,7 +1,12 @@
 const DisciplinaModel = require('../models/DisciplinaModel');
 
-let disciplinas = [];
-let _id = 0;
+let disciplinas = [
+    {_id:0, nome:"Fulano", curso:"ES", capacidade:40},
+    {_id:1, nome:"Siclano", curso:"ADM", capacidade:30},
+    {_id:2, nome:"Fulano de tal", curso:"SI", capacidade:20},
+    {_id:3, nome:"blabla", curso:"CC", capacidade:10}
+];
+let _id = 3;
 
 
 class DisciplinaService{
