@@ -1,7 +1,17 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 
-export default class Create extends Component{
+import FirebaseContext from '../utils/FirebaseContext';
+import FirebaseService from '../services/FirebaseService';
+
+const CreatePage = () => (
+
+    <FirebaseContext.Consumer>
+        {contexto => <Create firebase={contexto}/>}
+    </FirebaseContext.Consumer>
+)
+
+/*export default */class Create extends Component{
 
     constructor(props){
         super(props);
@@ -28,7 +38,31 @@ export default class Create extends Component{
 
     onSubmit(e){
         e.preventDefault();
-        const novaCadeira = {nome:this.state.nome, curso:this.state.curso, capacidade:this.state.capacidade};
+
+
+        const disciplina = {
+            nome:this.state.nome,
+            curso:this.state.curso,
+            capacidade:this.state.capacidade}
+
+        FirebaseService.create(
+            this.props.firebase.getFirestore(),
+            (mensagem)=>{
+                if(mensagem)
+                console.log(`Disciplina ${this.state.nome} inserido com sucesso.`)
+            }, disciplina)
+
+        /*this.props.firebase.getFirestore().collection('disciplina').add(
+            {
+                nome: this.state.nome,
+                curso: this.state.curso,
+                capacidade: this.state.capacidade,
+            }
+        )
+        .then(()=>console.log(`Estudante ${this.state.nome} inserido com sucesso.`))
+        .catch(error=>console.log(error))*/
+
+      /*  const novaCadeira = {nome:this.state.nome, curso:this.state.curso, capacidade:this.state.capacidade};
         
         axios.post('http://localhost:3002/disciplinas/register', novaCadeira)
     .then(
@@ -43,7 +77,7 @@ export default class Create extends Component{
         }
     )
         
-        this.setState({nome:"", curso:"", capacidade:""})
+        this.setState({nome:"", curso:"", capacidade:""})*/
     }
 
 
@@ -72,3 +106,5 @@ export default class Create extends Component{
         );
     }
 }
+
+export default CreatePage;

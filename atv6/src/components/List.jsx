@@ -1,18 +1,40 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import TableRow from './TableRow';
+import FirebaseContext from '../utils/FirebaseContext';
+import FirebaseService from '../services/FirebaseService';
 
-export default class List extends Component{
+const ListPage = () => (
+    <FirebaseContext.Consumer>
+        {contexto => <List firebase={contexto} />}
+    </FirebaseContext.Consumer>
+)
+
+
+/*export default*/ class List extends Component{
 
     constructor(props){
         super(props);
         
+        this._isMounted = false;
         this.state = {disciplina:[]};
         this.apagarDisciplinaPorId = this.apagarDisciplinaPorId.bind(this);
     }
 
     componentDidMount(){
-        axios.get("http://localhost:3002/disciplinas/list")
+       this._isMounted = true;
+       FirebaseService.list(this.props.firebase.getFirestore(), 
+       (disciplina)=>{
+            if(disciplina){
+                if(this._isMounted){
+                    this.setState({disciplina:disciplina});
+                }
+            }
+       })
+       //this.ref = this.props.firebase.getFirestore().collection('disciplina');
+       //this.ref.onSnapshot(this.alimentarDisciplinas.bind(this));
+       
+        /*axios.get("http://localhost:3002/disciplinas/list")
         .then(
             (res)=>{
                 this.setState({disciplina: res.data});
@@ -22,8 +44,31 @@ export default class List extends Component{
             (error)=>{
                 console.log(error);
             }
-        )
+        )*/
     }
+
+    componentWillUnmount(){
+        this._isMounted = false;
+    }
+
+    /*alimentarDisciplinas(query){
+        let disciplinas = []
+        query.forEach(
+            (doc)=>{
+                const {nome,curso,capacidade} = doc.data()
+                disciplinas.push(
+                    {
+                        _id: doc.id,
+                        nome,
+                        curso,
+                        capacidade,
+                    }
+                )
+            }
+        )
+        if(this._isMounted)
+        this.setState({disciplinas:disciplinas})
+    }*/
 
     montarTabela(){
         if(!this.state.disciplina){
@@ -31,7 +76,9 @@ export default class List extends Component{
         }else{
             return this.state.disciplina.map(
             (disciplina, i)=>{
-                return <TableRow disciplina={disciplina} key={i} apagarDisciplinaPorId={this.apagarDisciplinaPorId}/>
+                return <TableRow disciplina={disciplina} key={i} apagarDisciplinaPorId={this.apagarDisciplinaPorId}
+                firebase = {this.props.firebase}
+                />
             }
         )
         }
@@ -69,3 +116,5 @@ export default class List extends Component{
         );
     }
 }
+
+    export default ListPage;

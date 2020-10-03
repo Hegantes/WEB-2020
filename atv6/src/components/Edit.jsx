@@ -1,7 +1,16 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+//import axios from 'axios';
+import FirebaseContext from '../utils/FirebaseContext';
+import FirebaseService from '../services/FirebaseService';
+const EditPage = (props) => (
 
-export default class Edit extends Component{
+    <FirebaseContext.Consumer>
+        {contexto => <Edit firebase={contexto} id={props.match.params.id}/>}
+    </FirebaseContext.Consumer>
+)
+
+
+/*export default*/ class Edit extends Component{
 
     constructor(props){
         super(props);
@@ -28,7 +37,32 @@ export default class Edit extends Component{
 
     onSubmit(e){
      e.preventDefault()
-     const disciplinaEditada = {
+
+     const disciplina = {
+        nome:this.state.nome,
+        curso:this.state.curso,
+        capacidade:this.state.capacidade}
+
+    FirebaseService.edit(this.props.firebase.getFirestore(),
+        (mensagem)=>{
+            if(mensagem==='ok') console.log('Disciplina atualizada com sucesso.')
+        },disciplina, this.props.id)
+
+        /*this.props.firebase.getFirestore().collection('disciplina').doc(this.props.id).set(
+            {
+                nome: this.state.nome,
+                curso: this.state.curso,
+                capacidade: this.state.capacidade,
+            }
+        )
+        .then(()=>{
+            console.log('Disciplina Atualizada')
+        })
+        .catch((error)=>{
+            console.log(error)
+        })*/
+
+     /*const disciplinaEditada = {
         nome:this.state.nome,
         curso:this.state.curso,
         capacidade:this.state.capacidade}
@@ -43,11 +77,34 @@ export default class Edit extends Component{
             (error)=>{
                 console.log(error);
             }
-        )
+        )*/
     }
 
     componentDidMount(){
-        console.log("ID recebido: " + this.props.match.params.id);  
+
+        FirebaseService.retrieve(this.props.firebase.getFirestore(),
+        (disciplina)=>{
+            if(disciplina)
+                this.setState({
+                    nome: disciplina.nome,
+                    curso: disciplina.curso,
+                    capacidade: disciplina.capacidade
+                })
+        },this.props.id)
+
+        /*this.props.firebase.getFirestore().collection('disciplina').doc(this.props.id).get()
+        .then(
+            (doc)=>{
+                this.setState({
+                    nome: doc.data().nome,
+                    curso: doc.data().curso,
+                    capacidade: doc.data().capacidade
+                })
+            }
+        )
+        .catch(error => console.log(error))
+*/
+        /*console.log("ID recebido: " + this.props.match.params.id);  
         axios.get("http://localhost:3002/disciplinas/retrieve/"+this.props.match.params.id)
         .then(
             (res)=>{
@@ -64,7 +121,7 @@ export default class Edit extends Component{
             (error)=>{
                 console.log(error);
             }
-        )
+        )*/
     }
 
     render(){
@@ -92,3 +149,5 @@ export default class Edit extends Component{
         );
     }
 }
+
+export default EditPage;
