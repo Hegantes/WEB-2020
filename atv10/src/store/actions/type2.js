@@ -1,0 +1,1 @@
+export const NEW_NUMBER2 = 'NEW_NUMBER2';
